@@ -23,15 +23,15 @@ public class Player : MonoBehaviour
     {
        if(Input.GetKey("up"))
         {
-            transform.position += new Vector3(0, speed * Time.deltaTime, 0);
-            
+            transform.position += new Vector3(0, Mathf.Lerp(0, speed * Time.deltaTime, Time.time), 0);
+
         }
        else if(Input.GetKey("down"))
         {
-            transform.position -= new Vector3(0, speed * Time.deltaTime, 0);
+            transform.position -= new Vector3(0, Mathf.Lerp(0, speed * Time.deltaTime, Time.time), 0);
         }
        
-        //TouchMove();
+        TouchMove();
     }
     //부딪혔을때, HP가 감소함
     private void OnTriggerEnter(Collider other)
@@ -40,13 +40,23 @@ public class Player : MonoBehaviour
         _hpBar.fillAmount = _hp * 0.01f;
         if(_hp<=0)
         {
-            GameEnd();
+            _GMst.GameOver();
         }
     }
-
-    private void GameEnd()
+    void TouchMove()
     {
-        Debug.Log("Game End");
-        Time.timeScale = 0;
+        if(Input.touchCount >0)
+        {
+            if(Input.GetTouch(0).deltaPosition.y>1.0f)
+            {
+                transform.position += new Vector3(0, Mathf.Lerp(0,speed * Time.deltaTime, Time.time),0);
+            }
+            else if (Input.GetTouch(0).deltaPosition.y<-1.0f)
+            {
+                transform.position -= new Vector3(0, Mathf.Lerp(0, speed * Time.deltaTime, Time.time), 0);
+            }
+        }
+        transform.localPosition = new Vector3(transform.localPosition.x, Mathf.Clamp(transform.localPosition.y, -200.0f, 180.0f), transform.localPosition.z);
     }
+    
 }

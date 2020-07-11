@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 public class GM : MonoBehaviour
 {
     //인스펙터 정의
@@ -37,14 +37,13 @@ public class GM : MonoBehaviour
 
     //게임 스코어를 표현하기 위한 부분
     public UILabel _Score;
-    public int _GameScore;
-    public int _GameScorePer;
+    public float _GameScore;
+ 
 
-    void Start()
-    {
-        
-    }
+    public GameObject _ResultUI;
+    public UILabel _ResultPoint;
 
+  
     
     void Update()
     {
@@ -57,12 +56,16 @@ public class GM : MonoBehaviour
         _BgSetObj.transform.localPosition += new Vector3(_moveSpeed * -1F * Time.deltaTime*0.5f, 0, 0); //매 프레임마다 정해진 속력으로 좌측으로 이동
         _BgSetObj2.transform.localPosition += new Vector3(_moveSpeed * -1F * Time.deltaTime, 0, 0); //매 프레임마다 정해진 속력으로 좌측으로 이동
         _EnemySet1.transform.localPosition += new Vector3(_moveSpeed * -1f * Time.deltaTime, 0, 0);//적 세트 이동
+
+        _GameScore += _moveSpeed * Time.deltaTime * 0.01f; // 이동량에 따른 점수계싼
+        _Score.text = _GameScore.ToString("N0");
+
         if(_xPosMoveChk >960.0f)//누적 이동량이 960보다 크면 체크
         {
             _xPosMoveChk = 0;
             _BgSetObj2.transform.localPosition = new Vector3(960 * -1.0f, 0, 0);
-            _GameScore += _GameScorePer;
-            _Score.text = _GameScore.ToString();
+ 
+
             //BGSetObj 의 좌표를 초기값으로 변경
         }
         if (_xPosMoveChk3 > 960.0f)//누적 이동량이 960보다 크면 체크
@@ -119,5 +122,17 @@ public class GM : MonoBehaviour
                 _moveSpeed = _moveSpeedMax;
             }
         }
+    }
+    public void GameOver()
+    {
+        Time.timeScale = 0;
+        _ResultUI.SetActive(true);
+        _ResultPoint.text = _GameScore.ToString("N0");
+    }
+    void Regame()
+    {
+        _ResultUI.SetActive(false);
+        Time.timeScale = 1;
+        SceneManager.LoadScene("gameScene");
     }
 }
